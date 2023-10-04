@@ -13,6 +13,13 @@ dic_simbolos = {
     "D": 8
 }
 
+simbolos_multi = {
+    "A": 8,
+    "B": 6,
+    "C": 4,
+    "D": 2
+}
+
 def giros_maquina(linhas, colunas, simbolos):
     todos_simbolos = []
 
@@ -32,6 +39,23 @@ def giros_maquina(linhas, colunas, simbolos):
         matriz.append(novaLinha)
 
     return matriz
+
+def multiplicador(maquina, linhas, aposta, multi):
+    ganhos = 0
+    linha_premiada = []
+    for i in range(linhas):
+        simbolos = maquina[i][0]
+        todos_iguais = True
+        for check in maquina[i]:
+            if check != simbolos:
+                todos_iguais = False
+                break
+        if todos_iguais:
+            ganhos += aposta * multi[simbolos]
+            linha_premiada.append(maquina[i])
+
+
+    return ganhos, linha_premiada
 
 def print_maquina(matriz):
     for i in matriz:
@@ -92,16 +116,37 @@ def aposta(balanca, linha):
     print(f"Aposta realizada com o valor de R${aposta}\n")
     return aposta
 
-def main():
-    balanca = deposito()
+def giros(balanca):
+
     linhas = aposta_por_linha()
     apostas = aposta(balanca, linhas)
     aposta_total = apostas * linhas
     valores_maquina = giros_maquina(LINHAS, COLUNAS, dic_simbolos)
+    ganhos, linha_premiada = multiplicador(valores_maquina, linhas, apostas, simbolos_multi)
 
     print(f"Você está apostando R${apostas} em {linhas} linhas!\nTotal apostado: R${aposta_total}")
     print(f"Saldo atual: R${balanca - aposta_total}")
     print_maquina(valores_maquina)
+    print(f"Você ganhou R${ganhos}")
+    for i in range(len(linha_premiada)):
+        print(f"Linha premiada: {linha_premiada[i]} ")
+    print()
+
+    return ganhos - aposta_total
+
+def main():
+    print("Bem Vindo ao Cassino!")
+    balanca = deposito()
+
+    while True:
+        condicao = input("Pressione uma tecla para jogar(Q para sair)!")
+        if condicao == "q" or condicao == "Q":
+            print(f"Balança final R${balanca}")
+            break
+
+        print()
+        resultado = giros(balanca)
+        balanca = resultado + balanca
 
 
 if __name__ == "__main__":
